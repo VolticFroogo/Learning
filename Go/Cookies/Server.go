@@ -52,27 +52,27 @@ func clearSession(response http.ResponseWriter) {
 func loginHandler(response http.ResponseWriter, request *http.Request) {
 	name := request.FormValue("name")
 	redirectTarget := "/"
-	if name != "" && pass != "" {
-		// .. check credentials ..
+	if name != "" {
 		setSession(name, response)
 		redirectTarget = "/internal"
 	}
 	http.Redirect(response, request, redirectTarget, 302)
 }
 
-// logout handler
+// Logout Handler
 
 func logoutHandler(response http.ResponseWriter, request *http.Request) {
 	clearSession(response)
 	http.Redirect(response, request, "/", 302)
 }
 
-// index page
+// Index
 
 const indexPage = `
 <h1>Login</h1>
+<hr>
 <form method="post" action="/login">
-    <label for="name">User name</label>
+    <label for="name">Username: </label>
     <input type="text" id="name" name="name">
     <button type="submit">Login</button>
 </form>
@@ -87,12 +87,12 @@ func indexPageHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-// internal page
+// Internal
 
 const internalPage = `
 <h1>Internal</h1>
 <hr>
-<small>User: %v</small>
+<small>Username: %v</small>
 <form method="post" action="/logout">
     <button type="submit">Logout</button>
 </form>
@@ -107,7 +107,7 @@ func internalPageHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-// server main method
+// Request Handler
 
 var router = mux.NewRouter()
 
