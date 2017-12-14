@@ -77,6 +77,7 @@ func loginHandler(response http.ResponseWriter, request *http.Request) {
 	if name != "" {
 		setSession(name, response)
 		redirectTarget = "/internal"
+		log.Printf("%v successfully logged in from: %v.", name, splitAddress(request.RemoteAddr).ip)
 	}
 	http.Redirect(response, request, redirectTarget, 302)
 }
@@ -104,7 +105,6 @@ func indexPageHandler(response http.ResponseWriter, request *http.Request) {
 	userName := getUserName(request)
 	if userName == "" {
 		fmt.Fprintf(response, indexPage)
-		log.Printf("Index page sent to: %v.", splitAddress(request.RemoteAddr).ip)
 	} else {
 		http.Redirect(response, request, "/internal", 302)
 	}
