@@ -2,12 +2,34 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"net/http"
 )
 
-// Cookie Handling
+// Split address for logging
+
+type Address struct {
+	ip, port string
+}
+
+func splitAddress(address string) Address {
+	// Split IP:Port
+	split := strings.Split(address, ":")
+
+	// Fix for when localhost returns as [::1]:port
+	if (len(split) > 2) {
+		return Address{"localhost", split[len(split) - 1]}
+	} else {
+		return Address{split[0], split[1]}
+	}
+
+	// Returns IP and Port
+}
+
+// Cookie handling
 
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
@@ -47,7 +69,7 @@ func clearSession(response http.ResponseWriter) {
 	http.SetCookie(response, cookie)
 }
 
-// Login Handler
+// Login handler
 
 func loginHandler(response http.ResponseWriter, request *http.Request) {
 	name := request.FormValue("name")
@@ -59,7 +81,7 @@ func loginHandler(response http.ResponseWriter, request *http.Request) {
 	http.Redirect(response, request, redirectTarget, 302)
 }
 
-// Logout Handler
+// Logout handler
 
 func logoutHandler(response http.ResponseWriter, request *http.Request) {
 	clearSession(response)
@@ -82,6 +104,7 @@ func indexPageHandler(response http.ResponseWriter, request *http.Request) {
 	userName := getUserName(request)
 	if userName == "" {
 		fmt.Fprintf(response, indexPage)
+		log.Printf("Index page sent to: %v.", splitAddress(request.RemoteAddr).ip)
 	} else {
 		http.Redirect(response, request, "/internal", 302)
 	}
@@ -107,18 +130,17 @@ func internalPageHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-// Request Handler
+// Request handler
 
 var router = mux.NewRouter()
 
 func main() {
-
 	router.HandleFunc("/", indexPageHandler)
 	router.HandleFunc("/internal", internalPageHandler)
-
 	router.HandleFunc("/login", loginHandler).Methods("POST")
 	router.HandleFunc("/logout", logoutHandler).Methods("POST")
 
 	http.Handle("/", router)
+	log.Printf("Server started listening.")
 	http.ListenAndServe(":3737", nil)
 }
