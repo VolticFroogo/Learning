@@ -40,3 +40,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(&username, &email) // Scan data from query
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Queried user with ID: %v. Username: %v, Email: %v.", id, username, email) // Print query results
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close() // Close connection to DB
+}
