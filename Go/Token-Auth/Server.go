@@ -23,7 +23,7 @@ func main() {
 	r.HandleFunc("/", indexPageHandler)
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/internal", internalPageHandler)
-	r.HandleFunc("/logout", internalPageHandler)
+	r.HandleFunc("/logout", logoutHandler)
 
 	log.Printf("Server started listening.")
 	http.ListenAndServe(":3737", r)
