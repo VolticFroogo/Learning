@@ -12,6 +12,12 @@ type pageVariables struct {
 }
 
 func indexPageHandler(w http.ResponseWriter, r *http.Request) {
+	tokenID := getSession("Token", r) // Get tokenID from cookie
+	if checkToken(tokenID) {
+		http.Redirect(w, r, "/internal", 302) // If token exists and is valid redirect to internal
+		return
+	}
+
 	t, err := template.ParseFiles("Websites/index.html") // Parse the index HTML page
 	if err != nil {
 		log.Print("Template parsing error: ", err)
