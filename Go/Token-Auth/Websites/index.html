@@ -13,23 +13,5 @@
 		    <input type="password" id="password" name="password">
 		    <button type="submit">Login</button>
 		</form>
-
-		<script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function (){
-				$.ajax({
-			    	url: "/login",
-			    	type: "post",
-			    	contentType: 'application/json; charset=utf-8',
-			    	data: JSON.stringify({
-			    		username: 'Froogo'
-			    	}),
-			    	dataType: "json",
-			    	success: function(r) {
-			    		console.log("Success!")
-			    	}
-				});
-			});
-		</script>
 	</body>
 </html>
