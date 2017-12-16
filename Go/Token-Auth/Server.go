@@ -17,6 +17,8 @@ func checkPasswordHash(password, hash string) bool {
 func main() {
 	rand.Seed(time.Now().UnixNano()) // Make a seed for RNG
 	token = make(map[string]Token) // Make a map for all tokens
+	stopTokenCleaner := make(chan bool) // Make a quit channel to close cleaner
+	go tokenCleaner(stopTokenCleaner) // Start token garbage collector
 
 	r := mux.NewRouter()
 
@@ -27,4 +29,5 @@ func main() {
 
 	log.Printf("Server started listening.")
 	http.ListenAndServe(":3737", r)
+	stopTokenCleaner <- true
 }

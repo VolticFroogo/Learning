@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -37,16 +36,6 @@ func checkLogin(username, password string) (int, bool) {
 	valid := checkPasswordHash(password, hash)
 
 	return id, valid
-}
-
-func checkToken(tokenID string) bool {
-	if (token[tokenID].userid != 0) { // Check if token exists
-		if (token[tokenID].expires > int(time.Now().Unix())) { // Check if token has expired
-			return true // Token is valid
-		}
-	}
-
-	return false // Token is invalid
 }
 
 func dbGetUsername(id int) string {
