@@ -7,10 +7,6 @@ import (
 	"html/template"
 )
 
-type pageVariables struct {
-	Username string
-}
-
 func indexPageHandler(w http.ResponseWriter, r *http.Request) {
 	tokenID := getSession("Token", r) // Get tokenID from cookie
 	if checkToken(tokenID) {
@@ -21,12 +17,14 @@ func indexPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("Websites/index.html") // Parse the index HTML page
 	if err != nil {
 		log.Print("Template parsing error: ", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError) // Show internal server error
 	}
 
 	temp := 0
 	err = t.Execute(w, temp) // Execute temmplate with variables
 	if err != nil {
 		log.Print("Template execution error: ", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError) // Show internal server error
 	}
 }
 
@@ -55,15 +53,19 @@ func internalPageHandler(w http.ResponseWriter, r *http.Request) {
 		t, err := template.ParseFiles("Websites/internal.html") // Parse the internal HTML page
 		if err != nil {
 			log.Print("Template parsing error: ", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError) // Show internal server error
 		}
 
-		internalPageVariables := pageVariables {
-			Username: dbGetUsername(token[tokenID].userid), // Get username from token for template
+		var pageVariables struct {
+			Username string
 		}
 
-		err = t.Execute(w, internalPageVariables) // Execute temmplate with variables
+		pageVariables.Username = dbGetUsername(token[tokenID].userid)
+
+		err = t.Execute(w, pageVariables) // Execute temmplate with variables
 		if err != nil {
 			log.Print("Template execution error: ", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError) // Show internal server error
 		}
 
 		return // Page is sent, return

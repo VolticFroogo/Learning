@@ -71,9 +71,7 @@ func tokenCleaner(quit chan bool) {
                 var tokenID string // Make a string to store a tokenID
                 for tokenRange := range token { // Make a range of all tokens
                     tokenID = tokenRange // Set a tokenID from range
-                    if !checkToken(tokenID) { // Check if token has expired
-                        delete(token, tokenID) // Delete old token
-                    }
+                    checkToken(tokenID) // Check if token is valid if not it's deleted
                 }
             }
         case <- quit: // Quit channel has been called
