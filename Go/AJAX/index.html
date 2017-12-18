@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script>
+			$(document).ready(function (){
+				$()
+				$.ajax({
+					url: '/ajax',
+					type: "post",
+					contentType: 'application/json; charset=utf-8',
+					data: JSON.stringify({
+						From: 'Froogo',
+						Quote: 'I &hearts; Golang.'
+					}),
+					dataType: 'json',
+					success: function(r) {
+						$('#response').append(r.Response);
+						$('#from').append(r.From);
+						$('#quote').append(r.Quote);
+					}
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<p id="response">Response: </p>
+		<p id="from">From: </p>
+		<p id="quote">Quote: </p>
+	</body>
+</html>
