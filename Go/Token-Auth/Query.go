@@ -14,7 +14,7 @@ func checkLogin(username, password string) (int, bool) {
 
 	var (
 		hash string
-		id int
+		id   int
 	)
 
 	for rows.Next() {

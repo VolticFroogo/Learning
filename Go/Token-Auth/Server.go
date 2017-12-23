@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
-	"time"
-	"math/rand"
-	"net/http"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
+	"log"
+	"math/rand"
+	"net/http"
+	"time"
 )
 
 func checkPasswordHash(password, hash string) bool {
@@ -15,10 +15,10 @@ func checkPasswordHash(password, hash string) bool {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano()) // Make a seed for RNG
-	token = make(map[string]Token) // Make a map for all tokens
+	rand.Seed(time.Now().UnixNano())    // Make a seed for RNG
+	token = make(map[string]Token)      // Make a map for all tokens
 	stopTokenCleaner := make(chan bool) // Make a quit channel to close cleaner
-	go tokenCleaner(stopTokenCleaner) // Start token garbage collector
+	go tokenCleaner(stopTokenCleaner)   // Start token garbage collector
 
 	r := mux.NewRouter()
 

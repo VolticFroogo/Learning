@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
-	"time"
-	"net/http"
 	"html/template"
+	"log"
+	"net/http"
+	"time"
 )
 
 func indexPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,10 +34,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	redirectTarget := "/"
 	if username != "" && password != "" {
 		id, valid := checkLogin(username, password)
-		if (valid) {
+		if valid {
 			tokenID := GenerateToken()
-			token[tokenID] = Token {
-				userid: id,
+			token[tokenID] = Token{
+				userid:  id,
 				expires: int(time.Now().Unix()) + tokenLifetime,
 			}
 			setSession("Token", tokenID, w)
@@ -49,7 +49,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 func internalPageHandler(w http.ResponseWriter, r *http.Request) {
 	tokenID := getSession("Token", r) // Get tokenID from cookie
-	if checkToken(tokenID) { // Check if token is valid
+	if checkToken(tokenID) {          // Check if token is valid
 		t, err := template.ParseFiles("Websites/internal.html") // Parse the internal HTML page
 		if err != nil {
 			log.Print("Template parsing error: ", err)
@@ -76,7 +76,7 @@ func internalPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	tokenID := getSession("Token", r) // Get tokenID from cookie
-	delete(token, tokenID) // Revoke token
-	clearSession(w) // Delete session data
-	http.Redirect(w, r, "/", 302) // Redirect to index
+	delete(token, tokenID)            // Revoke token
+	clearSession(w)                   // Delete session data
+	http.Redirect(w, r, "/", 302)     // Redirect to index
 }

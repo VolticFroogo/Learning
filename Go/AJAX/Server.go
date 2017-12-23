@@ -37,6 +37,8 @@ func ajaxHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
+	log.Printf("From: %v", d.From)
+
 	n := Data {
 		Response: "Success.",
 		From: d.From,

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
 	"github.com/gorilla/securecookie"
+	"net/http"
 )
 
-var hashKey = securecookie.GenerateRandomKey(64) // Generate hash key for cookie encoding
-var blockKey = securecookie.GenerateRandomKey(32) // Generate block key for cookie encoding
+var hashKey = securecookie.GenerateRandomKey(64)        // Generate hash key for cookie encoding
+var blockKey = securecookie.GenerateRandomKey(32)       // Generate block key for cookie encoding
 var cookieHandler = securecookie.New(hashKey, blockKey) // Make cookie handler from hash key and block key
 
 func getSession(cookieName string, request *http.Request) (cookieData string) {
@@ -25,9 +25,9 @@ func setSession(cookieName string, cookieData string, response http.ResponseWrit
 	}
 	if encoded, err := cookieHandler.Encode("session", value); err == nil {
 		cookie := &http.Cookie{
-			Name: "session",
+			Name:  "session",
 			Value: encoded,
-			Path: "/",
+			Path:  "/",
 		}
 		http.SetCookie(response, cookie) // Set encoded cookie
 	}
