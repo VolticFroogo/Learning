@@ -1,5 +1,13 @@
 package main
 
+/*
+
+This is not a secure protocol and should never be used for production environements.
+This is simply an area to learn code and mess around with maps.
+Look at my JWT example for production ready code.
+
+*/
+
 import (
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
