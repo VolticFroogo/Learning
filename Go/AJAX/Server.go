@@ -3,9 +3,9 @@
 package main
 
 import (
-	"log"
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -30,7 +30,7 @@ func indexPageHandler(w http.ResponseWriter, r *http.Request) {
 
 // AJAX Request Handler
 func ajaxHandler(w http.ResponseWriter, r *http.Request) {
-	var d Data // Create struct to store data
+	var d Data                                // Create struct to store data
 	err := json.NewDecoder(r.Body).Decode(&d) // Decode response to struct
 	if err != nil {
 		log.Print("JSON decoding error: ", err)
@@ -39,10 +39,10 @@ func ajaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("From: %v", d.From)
 
-	n := Data {
+	n := Data{
 		Response: "Success.",
-		From: d.From,
-		Quote: d.Quote,
+		From:     d.From,
+		Quote:    d.Quote,
 	}
 	a, err := json.Marshal(n)
 	if err != nil {
