@@ -14,8 +14,8 @@ const (
 )
 
 type Message struct {
-	Type  int
-	BodyS string
+	Type  int    `json:"type"`
+	BodyS string `json:"bodys"`
 }
 
 func main() {

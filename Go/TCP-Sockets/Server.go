@@ -11,9 +11,8 @@ const (
 )
 
 type Message struct {
-	Type  int    // Type of information being sent
-	BodyS string // String version of body (in production maybe other body types)
-	BodyI int    // In actual production there could be 2 types of body
+	Type  int    `json:"type"`
+	BodyS string `json:"bodys"`
 }
 
 func handleConnection(conn net.Conn) {
