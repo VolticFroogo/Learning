@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/rsa"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"time"
@@ -32,6 +34,16 @@ type Token struct {
 type Response struct {
 	Data string `json:"data"`
 }
+
+const (
+	privKeyPath = "keys/app.rsa"     // `$ openssl genrsa -out app.rsa 2048`
+	pubKeyPath  = "keys/app.rsa.pub" // `$ openssl rsa -in app.rsa -pubout > app.rsa.pub`
+)
+
+var (
+	rsaVerifyKey *rsa.PublicKey
+	rsaSignKey   *rsa.PrivateKey
+)
 
 // Helper
 
@@ -112,13 +124,13 @@ func validateTokenMiddleware(w http.ResponseWriter, r *http.Request, next http.H
 
 		return secretKey, nil
 	})
-
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprintln(w, "Invalid token!")
 		return
 	}
 
+	// if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 	if token.Valid {
 		next(w, r)
 	} else {
@@ -127,12 +139,37 @@ func validateTokenMiddleware(w http.ResponseWriter, r *http.Request, next http.H
 	}
 }
 
+func initJWT() error {
+	signBytes, err := ioutil.ReadFile(privKeyPath)
+	if err != nil {
+		return err
+	}
+
+	rsaSignKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	if err != nil {
+		return err
+	}
+
+	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
+	if err != nil {
+		return err
+	}
+
+	rsaVerifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Main function
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	secretKey := make([]byte, 32)
 	rand.Read(secretKey)
+	initJWT()
 	fmt.Println("\nSecret key:", secretKey)
 
 	//PUBLIC ENDPOINTS
@@ -144,6 +181,49 @@ func main() {
 		negroni.Wrap(http.HandlerFunc(protectedHandler)),
 	))
 
-	fmt.Println("Now listening...")
+	/*
+
+		Generating an RSA JWT is the exact same as with HMAC.
+		The only exception is you sign with sign and verify with verify.
+		Rather than the usual sign/sign with HMAC.
+		An example is below for reference.
+
+	*/
+
+	claims := JwtClaims{
+		"Froogo",
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(30 * time.Second).Unix(),
+		},
+	}
+
+	rawToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+
+	tokenString, err := rawToken.SignedString(rsaSignKey)
+	if err != nil {
+		fmt.Println("Error generating JWT:", err)
+		return
+	}
+	fmt.Println("\nNew JWT:", tokenString)
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v.", token.Header["alg"])
+		}
+
+		return rsaVerifyKey, nil
+	})
+	if err != nil {
+		fmt.Println("Invalid token!")
+		return
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		fmt.Printf("\nUser: %v has a valid token!\n", claims["name"])
+	} else {
+		fmt.Println("Invalid token!")
+	}
+
+	fmt.Println("\nNow listening...")
 	http.ListenAndServe(":3737", nil)
 }
