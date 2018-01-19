@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Go Upload</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif
+            }
+
+            h1, h3 {
+                display: inline;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Go Upload</h1><h3> by Froogo.</h3>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="file">Filenames:</label>
+            <input type="file" name="file" multiple>
+            <input type="submit" name="submit" value="Submit">
+        </form>
+    </body>
+</html>
